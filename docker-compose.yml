@@ -6,6 +6,7 @@ services:
       context: .
     ports:
     - "3000:3000"
+    - "9229:9229"
     working_dir: "/src"
     volumes:
     - "./src:/src"
