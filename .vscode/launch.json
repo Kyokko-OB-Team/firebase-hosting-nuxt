@@ -5,11 +5,30 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "type": "pwa-chrome",
+      "type": "chrome",
       "request": "launch",
-      "name": "Launch Chrome against localhost",
-      "url": "http://localhost:3000",
-      "webRoot": "${workspaceFolder}"
+      "name": "client",
+      "url": "http://192.168.1.180:3000",
+      "webRoot": "${workspaceFolder}",
+      "runtimeArgs": [
+        "--remote-debugging-port=9222"
+      ]
+    },
+    {
+      "type": "node",
+      "request": "attach",
+      "name": "spa",
+      "port": 9229,
+      "address": "192.168.1.130",
+      "localRoot": "${workspaceFolder}/frontend",
+      "remoteRoot": "/src",
+      "protocol": "inspector"
+    },
+  ],
+  "compounds": [
+    {
+      "name": "debug-frontend",
+      "configurations": ["client", "spa"]
     }
   ]
 }

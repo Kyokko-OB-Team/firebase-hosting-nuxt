@@ -17,25 +17,33 @@
 <script>
 import Vue from 'vue'
 import { initializeApp } from 'firebase/app'
-import 'firebase/firestore'
+import { getFirestore } from 'firebase/firestore/lite'
 import VueC3 from 'vue-c3'
 import 'c3/c3.min.css'
 
-firebase
-initializeApp ({
+const firebaseApp = initializeApp ({
   projectId: 'kyokko-ob-team-8a210'
 });
-const firestore = firebase.firestore();
-firestore.settings({timestampsInSnapshots: true});
+const db = getFirestore(firebaseApp);
 
 export default {
   components: {
     VueC3
   },
 
+  data () {
+    return {
+      time: [],
+      temperatures: [],
+      humidity: [],
+      co2concentration: [],
+      handler: new Vue(),
+    }
+  },
+
   methods: {
     async getRoomTemp () {
-      await firestore.collection('sensor-data_test-env')
+      await db.collection('sensor-data_test-env')
           .orderBy('time')
           .limit(72)
           .get()
@@ -46,7 +54,7 @@ export default {
                 time: data.time.toLocaleDateString() + data.time.toLocaleTimeString(),
                 temperatures: data.temperatures,
                 humidity: data.humidity,
-                co2Concentration: data.co2Concentration,
+                co2concentration: data.co2Concentration,
               };
             });
           });
@@ -96,9 +104,7 @@ export default {
   },
 
   mounted () {
-    if (process.browser) {
-      this.initGraph();
-    }
+    this.initGraph();
   },
 
   async asyncData ({ $axios }) {
@@ -118,7 +124,6 @@ export default {
     return { res_data };
   }
 }
-
 </script>
 
 <style>

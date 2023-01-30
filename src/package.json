@@ -6,7 +6,8 @@
     "dev": "nuxt",
     "build": "nuxt build",
     "start": "nuxt start",
-    "generate": "nuxt generate"
+    "generate": "nuxt generate",
+    "debug": "node --inspect-brk=0.0.0.0:9229 node_modules/.bin/nuxt"
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.13.6",
