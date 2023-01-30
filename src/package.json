@@ -10,7 +10,13 @@
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.13.6",
+    "@nuxtjs/color-mode": "^3.2.0",
+    "@nuxtjs/vuetify": "^1.12.3",
+    "c3": "^0.7.20",
     "core-js": "^3.15.1",
-    "nuxt": "^2.15.7"
+    "firebase": "^9.16.0",
+    "nuxt": "^2.15.7",
+    "vue": "^2.7.14",
+    "vue-c3": "^1.2.11"
   }
 }
