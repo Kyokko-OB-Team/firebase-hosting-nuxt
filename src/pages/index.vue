@@ -1,6 +1,5 @@
 <template>
   <div>
-    <Tutorial/>
     <h1>今の温度</h1>
     <p>センサ名 : {{ res_data.name }}</p>
     <p>測定時間 : {{ res_data.time }}</p>
@@ -16,15 +15,18 @@
 
 <script>
 import Vue from 'vue'
-import { initializeApp } from 'firebase/app'
-import { getFirestore } from 'firebase/firestore/lite'
+import firebase from 'firebase/compat/app'
+import 'firebase/compat/firestore'
 import VueC3 from 'vue-c3'
 import 'c3/c3.min.css'
 
-const firebaseApp = initializeApp ({
+Vue.config.devtools = true;
+
+firebase.initializeApp ({
   projectId: 'kyokko-ob-team-8a210'
 });
-const db = getFirestore(firebaseApp);
+const firestore = firebase.firestore();
+firestore.settings({timestampsInSnapshots: true});
 
 export default {
   components: {
@@ -42,65 +44,65 @@ export default {
   },
 
   methods: {
-    async getRoomTemp () {
-      await db.collection('sensor-data_test-env')
-          .orderBy('time')
-          .limit(72)
-          .get()
-          .then(querySnapshot => {
-            this.room_data = querySnapshot.docs.map(doc => {
-              const data = doc.data()
-              return {
-                time: data.time.toLocaleDateString() + data.time.toLocaleTimeString(),
-                temperatures: data.temperatures,
-                humidity: data.humidity,
-                co2concentration: data.co2Concentration,
-              };
-            });
+    async getRoomTemp() {
+      await firestore.collection('sensor-data_test-env')
+        .orderBy('time', 'desc')
+        .limit(72)
+        .get()
+        .then(querySnapshot => {
+          this.room_data = querySnapshot.docs.map(doc => {
+            const data = doc.data()
+            return {
+              time: data.time,
+              temperatures: data.temperature,
+              humidity: data.humidity,
+              co2concentration: data["co2-concentration"],
+            };
           });
-    }
-  },
+        });
+    },
 
-  async initGraph () {
-    await this.getRoomTemp();
-    const options = {
-      data: {
-        x: 'x',
-        columns: [
-          ['x'].concat(this.room_data.map(data => { return data.time })),
-          ['温度(℃)'].concat(this.room_data.map(data => { return data.temperatures })),
-          ['湿度(%)'].concat(this.humidity.map(data => { return data.humidity })),
-          ['CO2濃度(ppm)'].concat(this.co2Concentration.map(data => { return data.co2Concentration })),
-        ]
-      },
-      axis: {
-        x: {
-          type: 'timeseries',
-          tick: {
-            format: '%Y-%m-%d %H:%M'
-          },
-          label: {
-            text: "time",
-            position: 'outer-middle'
-          },
+    async initGraph() {
+      await this.getRoomTemp();
+      const options = {
+        data: {
+          x: 'x',
+          columns: [
+            ['x'].concat(this.room_data.map(data => { return new Date(data.time * 1000) })),
+            ['温度(℃)'].concat(this.room_data.map(data => { return data.temperatures })),
+            ['湿度(%)'].concat(this.room_data.map(data => { return data.humidity })),
+            ['CO2濃度(ppm)'].concat(this.room_data.map(data => { return data.co2concentration })),
+          ]
         },
-        y: {
-          label: {
-            text: "温度(℃)",
-            position: 'outer-middle'
+        axis: {
+          x: {
+            type: 'timeseries',
+            tick: {
+              format: '%Y-%m-%d %H:%M'
+            },
+            label: {
+              text: "time",
+              position: 'outer-middle'
+            },
           },
-        },
-        y2: {
-          label: {
-            text: "湿度(%)",
-            position: 'outer-middle'
+          y: {
+            label: {
+              text: "温度(℃)",
+              position: 'outer-middle'
+            },
           },
-          max: 100,
-          min: 0,
+          y2: {
+            label: {
+              text: "湿度(%)",
+              position: 'outer-middle'
+            },
+            max: 100,
+            min: 0,
+          }
         }
       }
-    }
-    this.handler.$emit('init', options);
+      this.handler.$emit('init', options);
+    },
   },
 
   mounted () {
@@ -128,12 +130,12 @@ export default {
 
 <style>
   body {
-    color: #E8EAED;
-    background-color: #202124;
+    background-color: #E8EAED;
+    color: #202124;
   }
   h1 {
-    border-bottom: solid 3px #E8EAED;
-    border-top: solid 3px #E8EAED;
+    border-bottom: solid 3px #202124;
+    border-top: solid 3px #202124;
     padding: 10px 0 8px 25px;
     font-size: 40px;
   }
