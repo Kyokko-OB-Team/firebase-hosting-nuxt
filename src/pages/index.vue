@@ -71,8 +71,12 @@ export default {
             ['x'].concat(this.room_data.map(data => { return new Date(data.time * 1000) })),
             ['温度(℃)'].concat(this.room_data.map(data => { return data.temperatures })),
             ['湿度(%)'].concat(this.room_data.map(data => { return data.humidity })),
-            ['CO2濃度(ppm)'].concat(this.room_data.map(data => { return data.co2concentration })),
-          ]
+            // ['CO2濃度(ppm)'].concat(this.room_data.map(data => { return data.co2concentration })),
+          ],
+          axes: {
+            '温度(℃)': 'y',
+            '湿度(%)': 'y2'
+          }
         },
         axis: {
           x: {
@@ -82,22 +86,24 @@ export default {
             },
             label: {
               text: "time",
-              position: 'outer-middle'
+              position: 'outer-middle',
             },
           },
           y: {
             label: {
-              text: "温度(℃)",
-              position: 'outer-middle'
+              text: '温度(℃)',
+              position: 'outer-middle',
             },
+            max: 40,
           },
           y2: {
+            show: true,
             label: {
-              text: "湿度(%)",
-              position: 'outer-middle'
+              text: '湿度(%)',
+              position: 'outer-middle',
             },
-            max: 100,
             min: 0,
+            max: 90,
           }
         }
       }
